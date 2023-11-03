@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:alpine3.18
+    container_name: postgres_login
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: yomi
+      POSTGRES_PASSWORD: yomi123
+      POSTGRES_DB: main
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+  pgadmin:
+    image: dpage/pgadmin4:7.7
+    container_name: pgadmin_login
+    restart: unless-stopped
+    ports:
+      - 80:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: yomi@yomi.com
+      PGADMIN_DEFAULT_PASSWORD: yomi123
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+    user: root
