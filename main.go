@@ -89,6 +89,8 @@ func registerUser(c *gin.Context) {
         panic(err)
     }
 
+	newUser.Is_login = false
+
 	newUser.Password = string(hashedPass)
 
 	initial.DB.Create(newUser)
