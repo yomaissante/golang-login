@@ -72,7 +72,15 @@ func login(c *gin.Context) {
 		return
 	}
 
+	accountInfo.Is_login = true
+
+	initial.DB.Model(&accountInfo).Where("username", login.Username).Update("is_login", accountInfo.Is_login)
+
 	c.IndentedJSON(http.StatusAccepted, gin.H{"messsage": "Welcome!."})
+}
+
+func logout(c *gin.Context) {
+	
 }
 
 func registerUser(c *gin.Context) {
@@ -100,6 +108,7 @@ func registerUser(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	router.POST("/logout", logout)
 	router.POST("/login", login)
 	router.POST("/register", registerUser)
 	router.Run()
