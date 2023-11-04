@@ -27,8 +27,8 @@ type Login struct {
 	Password	string	`json:"password"`
 }
 
-func getAccountInfo(username string) (*Login, error){
-	var user Login
+func getAccountInfo(username string) (*model.Userdata, error){
+	var user model.Userdata
 
 	result := initial.DB.Where("username = ?", username).First(&user)
 
@@ -46,8 +46,23 @@ func login(c *gin.Context) {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"messsage": "username / password required."})
 	}
 
+	username := login.Username
 	
+	accountInfo, err := getAccountInfo(username)
 
+	if err != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "username / password incorrect."})
+		return
+	}
+
+	accError := bcrypt.CompareHashAndPassword([]byte(accountInfo.Password), []byte(login.Password))
+
+	if accError != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "username / password incorrect."})
+		return
+	}
+
+	c.IndentedJSON(http.StatusAccepted, gin.H{"messsage": "Welcome!."})
 }
 
 func registerUser(c *gin.Context) {
