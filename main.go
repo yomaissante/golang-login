@@ -39,6 +39,16 @@ func getAccountInfo(username string) (*model.Userdata, error){
 	return &user, nil
 }
 
+func validatePassword(loginPassword string, accountPassword string) (error){
+	err := bcrypt.CompareHashAndPassword([]byte(accountPassword), []byte(loginPassword))
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func login(c *gin.Context) {
 	var login Login
 
@@ -55,7 +65,7 @@ func login(c *gin.Context) {
 		return
 	}
 
-	accError := bcrypt.CompareHashAndPassword([]byte(accountInfo.Password), []byte(login.Password))
+	accError := validatePassword(login.Password, accountInfo.Password)
 
 	if accError != nil {
 		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "username / password incorrect."})
