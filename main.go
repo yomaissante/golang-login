@@ -7,6 +7,8 @@ import (
 
 	"github.com/golang/golang-login/initial"
 
+	"github.com/google/uuid"
+
 	"github.com/golang/golang-login/model"
 
 	"github.com/golang/golang-login/migrate"
@@ -96,6 +98,8 @@ func registerUser(c *gin.Context) {
     if err != nil {
         panic(err)
     }
+
+	newUser.UserID = uuid.New().String()
 
 	newUser.Is_login = false
 
