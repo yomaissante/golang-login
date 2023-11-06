@@ -24,11 +24,6 @@ func init() {
 	migrate.Migrate()
 }
 
-type Login struct {
-	Username	string	`json:"username"`
-	Password	string	`json:"password"`
-}
-
 func getAccountInfo(username string) (*model.Userdata, error){
 	var user model.Userdata
 
@@ -52,7 +47,7 @@ func validatePassword(loginPassword string, accountPassword string) (error){
 }
 
 func login(c *gin.Context) {
-	var login Login
+	var login model.Login
 
 	if err := c.BindJSON(&login); err != nil {
 		c.IndentedJSON(http.StatusBadRequest, gin.H{"messsage": "username / password required."})
@@ -85,6 +80,10 @@ func logout(c *gin.Context) {
 	
 }
 
+func changePassword(c *gin.Context) {
+	
+}
+
 func registerUser(c *gin.Context) {
 	var newUser model.Userdata
 
@@ -114,6 +113,7 @@ func main() {
 	router := gin.Default()
 	router.POST("/logout", logout)
 	router.POST("/login", login)
+	router.POST("/change-password", changePassword)
 	router.POST("/register", registerUser)
 	router.Run()
 }
