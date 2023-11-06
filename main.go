@@ -81,7 +81,45 @@ func logout(c *gin.Context) {
 }
 
 func changePassword(c *gin.Context) {
+	var chPass model.ChangePassword
+
+	if err := c.BindJSON(&chPass); err != nil {
+		c.IndentedJSON(http.StatusBadRequest, gin.H{"messsage": "username / password incorrect."})
+	}
+
+	username := chPass.Username
 	
+	accountInfo, err := getAccountInfo(username)
+
+	if err != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "username / password incorrect."})
+		return
+	}
+
+	accError := validatePassword(chPass.OldPassword, accountInfo.Password)
+
+	if accError != nil {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "username / password incorrect."})
+		return
+	}
+
+	if chPass.ConfirmPassword != chPass.NewPassword {
+		c.IndentedJSON(http.StatusUnauthorized, gin.H{"messsage": "password mismatch."})
+		return
+	}
+
+	passBeforeHash := []byte(chPass.NewPassword)
+
+	hashedPass, err := bcrypt.GenerateFromPassword(passBeforeHash, bcrypt.DefaultCost)
+    if err != nil {
+        panic(err)
+    }
+
+	accountInfo.Password = string(hashedPass)
+
+	initial.DB.Model(&accountInfo).Where("username", chPass.Username).Update("password", accountInfo.Password)
+
+	c.IndentedJSON(http.StatusAccepted, gin.H{"messsage": "Password Changed."})
 }
 
 func registerUser(c *gin.Context) {
