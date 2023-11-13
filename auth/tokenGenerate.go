@@ -18,7 +18,8 @@ import (
 
 var secret =  []byte(os.Getenv("SECRET_KEY"))
 
-func generateJWT() (string, error) {
+func generateJWT(username string) (string, error) {
+
 	token := jwt.New(jwt.SigningMethodHS256)
 
 	claims := token.Claims.(jwt.MapClaims)
@@ -27,16 +28,18 @@ func generateJWT() (string, error) {
 
 	claims["authorized"] = true
 
-	claims["user"] = "username"
+	claims["user"] = username
 
 	tokenString, err := token.SignedString(secret)
 
 	if err != nil {
 		return "", err
-	 }
+	}
 	
-	 return tokenString, nil
+	return tokenString, nil
 }
+
+
 
 
 
