@@ -1,22 +1,14 @@
 package auth
 
 import (
-	"fmt"
-
 	"os"
 
-	"strconv"
-
-	"strings"
-
 	"time"
-
-	"github.com/gin-gonic/gin"
 
 	jwt "github.com/golang-jwt/jwt/v5"
 )
 
-var secret =  []byte(os.Getenv("SECRET_KEY"))
+var secret = []byte(os.Getenv("SECRET_KEY"))
 
 func generateJWT(username string) (string, error) {
 
@@ -35,11 +27,6 @@ func generateJWT(username string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	
+
 	return tokenString, nil
 }
-
-
-
-
-
