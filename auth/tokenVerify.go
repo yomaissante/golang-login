@@ -5,8 +5,6 @@ import (
 
 	"os"
 
-	"strconv"
-
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -40,7 +38,7 @@ func ExtractToken(c *gin.Context) string {
 	return ""
 }
 
-func ExtractTokenID(c *gin.Context) (int, error) {
+func ExtractTokenID(c *gin.Context) (string, error) {
 
 	tokenString := ExtractToken(c)
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
@@ -50,15 +48,12 @@ func ExtractTokenID(c *gin.Context) (int, error) {
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
 	if err != nil {
-		return 0, err
+		return "unable to extract claims" , err
 	}
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if ok && token.Valid {
-		uid, err := strconv.ParseUint(fmt.Sprintf("%.0f", claims["user"]), 10, 32)
-		if err != nil {
-			return 0, err
-		}
-		return int(uid), nil
+		uid := claims["username"].(string)
+		return uid, nil
 	}
-	return 0, nil
+	return "unable to extract claims", nil
 }

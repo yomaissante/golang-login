@@ -18,7 +18,7 @@ func GenerateJWT(username string) (string, error) {
 
 	claims["authorized"] = true
 
-	claims["user"] = username
+	claims["username"] = username
 
 	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET_KEY")))
 
